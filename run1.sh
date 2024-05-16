@@ -1,0 +1,1 @@
+./image_roi.exe a.raw 2400 0 0 2400 4000

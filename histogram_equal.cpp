@@ -196,7 +196,7 @@ int main(int argc, char *argv[])
     // int row = 0;
     // int column = 0;
     // const int width_of_image = 2400;
-    // ofstream fout_test("image.txt");
+    // ofstream fout_test("image_equal.txt");
     while (fin.read(buffer, 4))
     {
         memcpy(&pixel, buffer, 4);
@@ -226,7 +226,7 @@ int main(int argc, char *argv[])
         memcpy(buffer, &pixel, 4);
         fout.write(buffer, 4);
 
-        // // for fout_test
+        // for fout_test
         // if (column == width_of_image - 1)
         // {
         //     fout_test << pixel << endl;
