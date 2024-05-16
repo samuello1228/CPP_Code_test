@@ -144,22 +144,22 @@ int main(int argc, char *argv[])
     float pixel;
     char buffer[4];
 
-    int row = 0;
-    int column = 0;
+    fin.seekg((roi_starty * width_of_image + roi_startx) * 4, fin.beg);
+    int y = 0;
+
     ofstream fout("out.dat", ios::binary);
     // ofstream fout_test("image.txt");
-    while (fin.read(buffer, 4))
+    while (true)
     {
-        if (column >= roi_startx &&
-            column <= roi_startx + roi_width - 1 &&
-            row >= roi_starty &&
-            row <= roi_starty + roi_height - 1)
+        for (int x = 0; x < roi_width; x++)
         {
+            // for fout
+            fin.read(buffer, 4);
             fout.write(buffer, 4);
 
             // for fout_test
             // memcpy(&pixel, buffer, 4);
-            // if (column == roi_startx + roi_width - 1)
+            // if (x == roi_width - 1)
             // {
             //     fout_test << pixel << endl;
             // }
@@ -169,16 +169,11 @@ int main(int argc, char *argv[])
             // }
         }
 
-        // for next pixel
-        if (column == width_of_image - 1)
-        {
-            row++;
-            column = 0;
-        }
-        else
-        {
-            column++;
-        }
+        y++;
+        if (y == roi_height)
+            break;
+
+        fin.seekg((width_of_image - roi_width) * 4, fin.cur);
     }
 
     fin.close();
