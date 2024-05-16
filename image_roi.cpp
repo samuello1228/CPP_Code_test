@@ -142,7 +142,6 @@ int main(int argc, char *argv[])
 
     // variables for file IO
     float pixel;
-    char *pixel_bytes = (char *)&pixel;
     char buffer[4];
 
     int row = 0;
@@ -151,26 +150,15 @@ int main(int argc, char *argv[])
     // ofstream fout_test("image.txt");
     while (fin.read(buffer, 4))
     {
-        // read float32 with little endian
-        // pixel_bytes[0] = buffer[3];
-        // pixel_bytes[1] = buffer[2];
-        // pixel_bytes[2] = buffer[1];
-        // pixel_bytes[3] = buffer[0];
-        // cout << pixel << " ";
-
         if (column >= roi_startx &&
             column <= roi_startx + roi_width - 1 &&
             row >= roi_starty &&
             row <= roi_starty + roi_height - 1)
         {
-            // write float32 with little endian
-            // buffer[0] = pixel_bytes[3];
-            // buffer[1] = pixel_bytes[2];
-            // buffer[2] = pixel_bytes[1];
-            // buffer[3] = pixel_bytes[0];
             fout.write(buffer, 4);
 
             // for fout_test
+            // memcpy(&pixel, buffer, 4);
             // if (column == roi_startx + roi_width - 1)
             // {
             //     fout_test << pixel << endl;

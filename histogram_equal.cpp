@@ -129,7 +129,6 @@ int main(int argc, char *argv[])
 
     // variables for file IO
     float pixel;
-    char *pixel_bytes = (char *)&pixel;
     char buffer[4];
 
     // define some constant for histograms
@@ -144,11 +143,7 @@ int main(int argc, char *argv[])
     int higher = 0;
     while (fin.read(buffer, 4))
     {
-        // read float32 with little endian
-        pixel_bytes[0] = buffer[3];
-        pixel_bytes[1] = buffer[2];
-        pixel_bytes[2] = buffer[1];
-        pixel_bytes[3] = buffer[0];
+        memcpy(&pixel, buffer, 4);
         // cout << pixel << " ";
 
         // get index of histogram
@@ -204,11 +199,7 @@ int main(int argc, char *argv[])
     // ofstream fout_test("image.txt");
     while (fin.read(buffer, 4))
     {
-        // read float32 with little endian
-        pixel_bytes[0] = buffer[3];
-        pixel_bytes[1] = buffer[2];
-        pixel_bytes[2] = buffer[1];
-        pixel_bytes[3] = buffer[0];
+        memcpy(&pixel, buffer, 4);
         // cout << pixel << " ";
 
         // get index of histogram
@@ -231,11 +222,8 @@ int main(int argc, char *argv[])
                 hist_output[output_index]++;
         }
 
-        // write float32 with little endian
-        buffer[0] = pixel_bytes[3];
-        buffer[1] = pixel_bytes[2];
-        buffer[2] = pixel_bytes[1];
-        buffer[3] = pixel_bytes[0];
+        // write
+        memcpy(buffer, &pixel, 4);
         fout.write(buffer, 4);
 
         // // for fout_test
