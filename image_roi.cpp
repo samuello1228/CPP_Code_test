@@ -141,33 +141,66 @@ int main(int argc, char *argv[])
     }
 
     // variables for file IO
+    const int block_size = 1000;
+    const int quotient = roi_width / block_size;
+    const int remainder = roi_width % block_size;
+    char buffer[block_size * 4];
     float pixel;
-    char buffer[4];
 
     fin.seekg((roi_starty * width_of_image + roi_startx) * 4, fin.beg);
     int y = 0;
 
     ofstream fout("out.dat", ios::binary);
     // ofstream fout_test("image.txt");
+    // char *pixel_bytes = (char *)&pixel;
     while (true)
     {
-        for (int x = 0; x < roi_width; x++)
+        for (int i = 0; i < quotient; i++)
         {
             // for fout
-            fin.read(buffer, 4);
-            fout.write(buffer, 4);
+            fin.read(buffer, block_size * 4);
+            fout.write(buffer, block_size * 4);
 
             // for fout_test
-            // memcpy(&pixel, buffer, 4);
-            // if (x == roi_width - 1)
+            // for (int j = 0; j < block_size; j++)
             // {
-            //     fout_test << pixel << endl;
-            // }
-            // else
-            // {
-            //     fout_test << pixel << ", ";
+            //     pixel_bytes[0] = buffer[4 * j];
+            //     pixel_bytes[1] = buffer[4 * j + 1];
+            //     pixel_bytes[2] = buffer[4 * j + 2];
+            //     pixel_bytes[3] = buffer[4 * j + 3];
+
+            //     if (remainder == 0 && i == quotient - 1 && j == block_size - 1)
+            //     {
+            //         fout_test << pixel << endl;
+            //     }
+            //     else
+            //     {
+            //         fout_test << pixel << ", ";
+            //     }
             // }
         }
+
+        // for remainder
+        fin.read(buffer, remainder * 4);
+        fout.write(buffer, remainder * 4);
+
+        // for fout_test
+        // for (int j = 0; j < remainder; j++)
+        // {
+        //     pixel_bytes[0] = buffer[4 * j];
+        //     pixel_bytes[1] = buffer[4 * j + 1];
+        //     pixel_bytes[2] = buffer[4 * j + 2];
+        //     pixel_bytes[3] = buffer[4 * j + 3];
+
+        //     if (j == remainder - 1)
+        //     {
+        //         fout_test << pixel << endl;
+        //     }
+        //     else
+        //     {
+        //         fout_test << pixel << ", ";
+        //     }
+        // }
 
         y++;
         if (y == roi_height)
