@@ -141,10 +141,10 @@ int main(int argc, char *argv[])
     }
 
     // variables for file IO
-    const int block_size = 1000;
-    const int quotient = roi_width / block_size;
-    const int remainder = roi_width % block_size;
-    char buffer[block_size * 4];
+    const int buffer_size = 1000;
+    const int quotient = roi_width / buffer_size;
+    const int remainder = roi_width % buffer_size;
+    char buffer[buffer_size * 4];
 
     fin.seekg((roi_starty * width_of_image + roi_startx) * 4, fin.beg);
     int y = 0;
@@ -158,18 +158,18 @@ int main(int argc, char *argv[])
         for (int i = 0; i < quotient; i++)
         {
             // for fout
-            fin.read(buffer, block_size * 4);
-            fout.write(buffer, block_size * 4);
+            fin.read(buffer, buffer_size * 4);
+            fout.write(buffer, buffer_size * 4);
 
             // for fout_test
-            // for (int j = 0; j < block_size; j++)
+            // for (int j = 0; j < buffer_size; j++)
             // {
             //     pixel_bytes[0] = buffer[4 * j];
             //     pixel_bytes[1] = buffer[4 * j + 1];
             //     pixel_bytes[2] = buffer[4 * j + 2];
             //     pixel_bytes[3] = buffer[4 * j + 3];
 
-            //     if (remainder == 0 && i == quotient - 1 && j == block_size - 1)
+            //     if (remainder == 0 && i == quotient - 1 && j == buffer_size - 1)
             //     {
             //         fout_test << pixel << endl;
             //     }
