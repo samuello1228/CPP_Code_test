@@ -58,11 +58,11 @@ void set_new_pixel(
         // cout << pixel << " ";
 
         // set new pixel
-        if ((pixel) < min_lot_value)
+        if (pixel < min_lot_value)
         {
             pixel = lowest_value;
         }
-        else if ((pixel) >= max_lot_value)
+        else if (pixel >= max_lot_value)
         {
             pixel = highest_value;
         }
@@ -245,7 +245,8 @@ int main(int argc, char *argv[])
         counting(
             buffer, buffer_size,
             pixel, pixel_bytes,
-            min_lot_value, max_lot_value, input_bin_width,
+            min_lot_value, max_lot_value,
+            input_bin_width,
             lower, higher, hist_input);
     }
 
