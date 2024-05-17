@@ -18,35 +18,35 @@ int main(int argc, char *argv[])
     const string image_file_name = argv[1];
 
     char *pEnd;
-    const int width_of_image = strtol(argv[2], &pEnd, 10);
+    const long int width_of_image = strtol(argv[2], &pEnd, 10);
     if (*pEnd || argv[2][0] == '\0')
     {
         cout << "<width of image> should be an integer." << endl;
         return 0;
     }
 
-    const int roi_startx = strtol(argv[3], &pEnd, 10);
+    const long int roi_startx = strtol(argv[3], &pEnd, 10);
     if (*pEnd || argv[3][0] == '\0')
     {
         cout << "<roi_startx> should be an integer." << endl;
         return 0;
     }
 
-    const int roi_starty = strtol(argv[4], &pEnd, 10);
+    const long int roi_starty = strtol(argv[4], &pEnd, 10);
     if (*pEnd || argv[4][0] == '\0')
     {
         cout << "<roi_starty> should be an integer." << endl;
         return 0;
     }
 
-    const int roi_width = strtol(argv[5], &pEnd, 10);
+    const long int roi_width = strtol(argv[5], &pEnd, 10);
     if (*pEnd || argv[5][0] == '\0')
     {
         cout << "<roi_width> should be an integer." << endl;
         return 0;
     }
 
-    const int roi_height = strtol(argv[6], &pEnd, 10);
+    const long int roi_height = strtol(argv[6], &pEnd, 10);
     if (*pEnd || argv[6][0] == '\0')
     {
         cout << "<roi_height> should be an integer." << endl;
@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
 
     // get size of the file
     fin.seekg(0, fin.end);
-    const int size = fin.tellg();
+    const long int size = fin.tellg();
     fin.seekg(0, fin.beg);
     // cout << size << endl;
 
@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    const int total_input_pixel = size / 4;
+    const long int total_input_pixel = size / 4;
 
     // check whether the width of image is correct
     if (width_of_image <= 0)
@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
     }
 
     // get height_of_image
-    const int height_of_image = total_input_pixel / width_of_image;
+    const long int height_of_image = total_input_pixel / width_of_image;
     // cout << "original image resolution: " << width_of_image << " x " << height_of_image << endl;
 
     // check roi_startx
@@ -141,13 +141,13 @@ int main(int argc, char *argv[])
     }
 
     // variables for file IO
-    const int buffer_size = 1000;
-    const int quotient = roi_width / buffer_size;
-    const int remainder = roi_width % buffer_size;
+    const long int buffer_size = 1000;
+    const long int quotient = roi_width / buffer_size;
+    const long int remainder = roi_width % buffer_size;
     char buffer[buffer_size * 4];
 
     fin.seekg((roi_starty * width_of_image + roi_startx) * 4, fin.beg);
-    int y = 0;
+    long int y = 0;
 
     ofstream fout("out.dat", ios::binary);
     // ofstream fout_test("image.txt");
@@ -155,14 +155,14 @@ int main(int argc, char *argv[])
     // char *pixel_bytes = (char *)&pixel;
     while (true)
     {
-        for (int i = 0; i < quotient; i++)
+        for (long int i = 0; i < quotient; i++)
         {
             // for fout
             fin.read(buffer, buffer_size * 4);
             fout.write(buffer, buffer_size * 4);
 
             // for fout_test
-            // for (int j = 0; j < buffer_size; j++)
+            // for (long int j = 0; j < buffer_size; j++)
             // {
             //     pixel_bytes[0] = buffer[4 * j];
             //     pixel_bytes[1] = buffer[4 * j + 1];
@@ -185,7 +185,7 @@ int main(int argc, char *argv[])
         fout.write(buffer, remainder * 4);
 
         // for fout_test
-        // for (int j = 0; j < remainder; j++)
+        // for (long int j = 0; j < remainder; j++)
         // {
         //     pixel_bytes[0] = buffer[4 * j];
         //     pixel_bytes[1] = buffer[4 * j + 1];

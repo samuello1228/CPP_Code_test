@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
 
     // get size of the file
     fin.seekg(0, fin.end);
-    const int size = fin.tellg();
+    const long int size = fin.tellg();
     fin.seekg(0, fin.beg);
     // cout << size << endl;
 
@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    const int total_input_pixel = size / 4;
+    const long int total_input_pixel = size / 4;
 
     // check min_lot_value and max_lot_value
     if (min_lot_value >= max_lot_value)
@@ -137,10 +137,10 @@ int main(int argc, char *argv[])
     const float output_bin_width = range / output_lot;
 
     // initialize hist_input
-    vector<int> hist_input(input_lot, 0);
+    vector<long int> hist_input(input_lot, 0);
 
-    int lower = 0;
-    int higher = 0;
+    long int lower = 0;
+    long int higher = 0;
     while (fin.read(buffer, 4))
     {
         memcpy(&pixel, buffer, 4);
@@ -183,7 +183,7 @@ int main(int argc, char *argv[])
     // }
 
     // initialize hist_output
-    vector<int> hist_output(output_lot, 0);
+    vector<long int> hist_output(output_lot, 0);
 
     // reset file input
     fin.clear();
@@ -191,9 +191,9 @@ int main(int argc, char *argv[])
 
     ofstream fout("outhisto.dat", ios::binary);
 
-    // int row = 0;
-    // int column = 0;
-    // const int width_of_image = 2400;
+    // long int row = 0;
+    // long int column = 0;
+    // const long int width_of_image = 2400;
     // ofstream fout_test("image_equal.txt");
     while (fin.read(buffer, 4))
     {
