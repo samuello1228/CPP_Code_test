@@ -146,20 +146,18 @@ int main(int argc, char *argv[])
         memcpy(&pixel, buffer, 4);
         // cout << pixel << " ";
 
-        // get index of histogram
-        int input_index = floor((pixel - min_lot_value) / input_bin_width);
-
         // counting
-        if (input_index < 0)
+        if (pixel < min_lot_value)
         {
             lower++;
         }
-        else if (input_index >= input_lot)
+        else if (pixel >= max_lot_value)
         {
             higher++;
         }
         else
         {
+            const int input_index = floor((pixel - min_lot_value) / input_bin_width);
             hist_input[input_index]++;
         }
     }
@@ -202,22 +200,21 @@ int main(int argc, char *argv[])
         memcpy(&pixel, buffer, 4);
         // cout << pixel << " ";
 
-        // get index of histogram
-        int input_index = floor((pixel - min_lot_value) / input_bin_width);
-
         // set new pixel
-        if (input_index < 0)
+        if (pixel < min_lot_value)
         {
             pixel = lowest_value;
         }
-        else if (input_index >= input_lot)
+        else if (pixel >= max_lot_value)
         {
             pixel = highest_value;
         }
         else
         {
+            const int input_index = floor((pixel - min_lot_value) / input_bin_width);
             pixel = min_lot_value + hist_cumulative[input_index] * range;
-            int output_index = ceil((pixel - min_lot_value) / output_bin_width) - 1;
+            
+            const int output_index = ceil((pixel - min_lot_value) / output_bin_width) - 1;
             if (output_index >= 0)
                 hist_output[output_index]++;
         }
