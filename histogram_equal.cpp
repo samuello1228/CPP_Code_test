@@ -6,6 +6,97 @@
 #include <vector>
 using namespace std;
 
+void counting(
+    char *buffer, long int buffer_size,
+    float &pixel, char *pixel_bytes,
+    float min_lot_value, float max_lot_value,
+    float input_bin_width,
+    long int &lower, long int &higher,
+    vector<long int> &hist_input)
+{
+    for (long int j = 0; j < buffer_size; j++)
+    {
+        pixel_bytes[0] = buffer[4 * j];
+        pixel_bytes[1] = buffer[4 * j + 1];
+        pixel_bytes[2] = buffer[4 * j + 2];
+        pixel_bytes[3] = buffer[4 * j + 3];
+        // cout << pixel << " ";
+
+        // counting
+        if (pixel < min_lot_value)
+        {
+            lower++;
+        }
+        else if (pixel >= max_lot_value)
+        {
+            higher++;
+        }
+        else
+        {
+            const int input_index = floor((pixel - min_lot_value) / input_bin_width);
+            hist_input[input_index]++;
+        }
+    }
+}
+
+void set_new_pixel(
+    char *buffer, long int buffer_size,
+    float &pixel, char *pixel_bytes,
+    float min_lot_value, float max_lot_value,
+    float lowest_value, float highest_value,
+    float range, float input_bin_width, float output_bin_width,
+    vector<float> &hist_cumulative,
+    // long int &row, long int &column, long int width_of_image, ofstream &fout_test,
+    vector<long int> &hist_output)
+{
+    for (long int j = 0; j < buffer_size; j++)
+    {
+        pixel_bytes[0] = buffer[4 * j];
+        pixel_bytes[1] = buffer[4 * j + 1];
+        pixel_bytes[2] = buffer[4 * j + 2];
+        pixel_bytes[3] = buffer[4 * j + 3];
+        // cout << pixel << " ";
+
+        // set new pixel
+        if ((pixel) < min_lot_value)
+        {
+            pixel = lowest_value;
+        }
+        else if ((pixel) >= max_lot_value)
+        {
+            pixel = highest_value;
+        }
+        else
+        {
+            const int input_index = floor((pixel - min_lot_value) / input_bin_width);
+            pixel = min_lot_value + hist_cumulative[input_index] * range;
+
+            const int output_index = ceil((pixel - min_lot_value) / output_bin_width) - 1;
+            if (output_index >= 0)
+                hist_output[output_index]++;
+        }
+
+        // write
+        buffer[4 * j] = pixel_bytes[0];
+        buffer[4 * j + 1] = pixel_bytes[1];
+        buffer[4 * j + 2] = pixel_bytes[2];
+        buffer[4 * j + 3] = pixel_bytes[3];
+
+        // for fout_test
+        // if (column == width_of_image - 1)
+        // {
+        //     fout_test << pixel << endl;
+        //     row++;
+        //     column = 0;
+        // }
+        // else
+        // {
+        //     fout_test << pixel << ", ";
+        //     column++;
+        // }
+    }
+}
+
 int main(int argc, char *argv[])
 {
     // check the number of argument
@@ -128,8 +219,13 @@ int main(int argc, char *argv[])
     }
 
     // variables for file IO
+    const long int buffer_size = 10000;
+    const long int quotient = total_input_pixel / buffer_size;
+    const long int remainder = total_input_pixel % buffer_size;
+    char buffer[buffer_size * 4];
+
     float pixel;
-    char buffer[4];
+    char *pixel_bytes = (char *)&pixel;
 
     // define some constant for histograms
     const float range = max_lot_value - min_lot_value;
@@ -141,26 +237,26 @@ int main(int argc, char *argv[])
 
     long int lower = 0;
     long int higher = 0;
-    while (fin.read(buffer, 4))
-    {
-        memcpy(&pixel, buffer, 4);
-        // cout << pixel << " ";
 
-        // counting
-        if (pixel < min_lot_value)
-        {
-            lower++;
-        }
-        else if (pixel >= max_lot_value)
-        {
-            higher++;
-        }
-        else
-        {
-            const int input_index = floor((pixel - min_lot_value) / input_bin_width);
-            hist_input[input_index]++;
-        }
+    // for quotient
+    for (long int i = 0; i < quotient; i++)
+    {
+        fin.read(buffer, buffer_size * 4);
+        counting(
+            buffer, buffer_size,
+            pixel, pixel_bytes,
+            min_lot_value, max_lot_value, input_bin_width,
+            lower, higher, hist_input);
     }
+
+    // for remainder
+    fin.read(buffer, remainder * 4);
+    counting(
+        buffer, remainder,
+        pixel, pixel_bytes,
+        min_lot_value, max_lot_value,
+        input_bin_width,
+        lower, higher, hist_input);
 
     // calculate hist_cumulative
     vector<float> hist_cumulative(input_lot, 0);
@@ -186,56 +282,44 @@ int main(int argc, char *argv[])
     vector<long int> hist_output(output_lot, 0);
 
     // reset file input
-    fin.clear();
     fin.seekg(0, fin.beg);
 
     ofstream fout("outhisto.dat", ios::binary);
 
+    // for fout_test
     // long int row = 0;
     // long int column = 0;
     // const long int width_of_image = 2400;
     // ofstream fout_test("image_equal.txt");
-    while (fin.read(buffer, 4))
+
+    // for quotient
+    for (long int i = 0; i < quotient; i++)
     {
-        memcpy(&pixel, buffer, 4);
-        // cout << pixel << " ";
-
-        // set new pixel
-        if (pixel < min_lot_value)
-        {
-            pixel = lowest_value;
-        }
-        else if (pixel >= max_lot_value)
-        {
-            pixel = highest_value;
-        }
-        else
-        {
-            const int input_index = floor((pixel - min_lot_value) / input_bin_width);
-            pixel = min_lot_value + hist_cumulative[input_index] * range;
-            
-            const int output_index = ceil((pixel - min_lot_value) / output_bin_width) - 1;
-            if (output_index >= 0)
-                hist_output[output_index]++;
-        }
-
-        // write
-        memcpy(buffer, &pixel, 4);
-        fout.write(buffer, 4);
-
-        // for fout_test
-        // if (column == width_of_image - 1)
-        // {
-        //     fout_test << pixel << endl;
-        //     row++;
-        //     column = 0;
-        // }
-        // else
-        // {
-        //     fout_test << pixel << ", ";
-        //     column++;
-        // }
+        fin.read(buffer, buffer_size * 4);
+        set_new_pixel(
+            buffer, buffer_size,
+            pixel, pixel_bytes,
+            min_lot_value, max_lot_value,
+            lowest_value, highest_value,
+            range, input_bin_width, output_bin_width,
+            hist_cumulative,
+            // row, column, width_of_image, fout_test,
+            hist_output);
+        fout.write(buffer, buffer_size * 4);
     }
+
+    // for remainder
+    fin.read(buffer, remainder * 4);
+    set_new_pixel(
+        buffer, remainder,
+        pixel, pixel_bytes,
+        min_lot_value, max_lot_value,
+        lowest_value, highest_value,
+        range, input_bin_width, output_bin_width,
+        hist_cumulative,
+        // row, column, width_of_image, fout_test,
+        hist_output);
+    fout.write(buffer, remainder * 4);
 
     fin.close();
     fout.close();
