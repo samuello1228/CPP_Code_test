@@ -145,13 +145,13 @@ int main(int argc, char *argv[])
     const int quotient = roi_width / block_size;
     const int remainder = roi_width % block_size;
     char buffer[block_size * 4];
-    float pixel;
 
     fin.seekg((roi_starty * width_of_image + roi_startx) * 4, fin.beg);
     int y = 0;
 
     ofstream fout("out.dat", ios::binary);
     // ofstream fout_test("image.txt");
+    // float pixel;
     // char *pixel_bytes = (char *)&pixel;
     while (true)
     {
